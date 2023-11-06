@@ -32,7 +32,7 @@ public static class LengthParser
 
     private static bool IsFractionalToken(string token)
     {
-       return token.Contains("/") || token.Contains("\\");
+       return token.Contains('/') || token.Contains('\\');
     }
 
     private static List<(string, string)> GenerateTokenPairs(List<string> tokens)
@@ -73,9 +73,8 @@ public static class LengthParser
             return new FractionalParseResult(0, 0, false);
         }
 
-        double numerator, denominator;
-        var numeratorResult = Double.TryParse(tokens[0], out numerator);
-        var denominatorResult = Double.TryParse(tokens[1], out denominator);
+        var numeratorResult = Double.TryParse(tokens[0], out var numerator);
+        var denominatorResult = Double.TryParse(tokens[1], out var denominator);
 
         if (!numeratorResult || !denominatorResult)
         {
@@ -92,8 +91,7 @@ public static class LengthParser
 
     private static NonFractionalParseResult ParseNonFractionalToken((string, string) tokenPair)
     {
-        double value;
-        var valueResult = Double.TryParse(tokenPair.Item1, out value);
+        var valueResult = Double.TryParse(tokenPair.Item1, out var value);
         
         var unitString = tokenPair.Item2;
         var containsKey = LengthUnitMap.ContainsKey(unitString);
