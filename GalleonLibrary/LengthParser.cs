@@ -122,7 +122,7 @@ public static class LengthParser
 
         var newNumerator = result.Numerator * multiplier;
 
-        return new LengthValue(UnitSystem.Imperial, LengthUnit.FractionOfInch, newNumerator);
+        return new LengthValue(UnitSystem.Imperial, LengthUnit.SixtyFourthOfInch, newNumerator);
     }
         
     public static LengthParserResult ParseTokens(List<string> tokens)
