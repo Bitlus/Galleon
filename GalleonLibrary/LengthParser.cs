@@ -70,7 +70,7 @@ public static class LengthParser
         var tokens = token.Split(splitter);
         if (tokens.Length != 2)
         {
-            return new FractionalParseResult(0, 0, false);
+            return new FractionalParseResult(0, 0, false, token);
         }
 
         var numeratorResult = Double.TryParse(tokens[0], out var numerator);
@@ -78,15 +78,15 @@ public static class LengthParser
 
         if (!numeratorResult || !denominatorResult)
         {
-            return new FractionalParseResult(0, 0, false);
+            return new FractionalParseResult(0, 0, false, token);
         }
 
         if (!ValidDenominators.Contains(denominator)) 
         {
-            return new FractionalParseResult(numerator, denominator, false);
+            return new FractionalParseResult(numerator, denominator, false, token);
         }
 
-        return new FractionalParseResult(numerator, denominator, true);
+        return new FractionalParseResult(numerator, denominator, true, token);
     }
 
     private static NonFractionalParseResult ParseNonFractionalToken((string, string) tokenPair)
@@ -98,13 +98,13 @@ public static class LengthParser
 
         if (!containsKey || !valueResult)
         {
-            return new NonFractionalParseResult(new LengthValue(UnitSystem.Imperial, LengthUnit.Inches, 0.0), false);
+            return new NonFractionalParseResult(new LengthValue(UnitSystem.Imperial, LengthUnit.Inches, 0.0), false, tokenPair);
         }
 
         var unit = LengthUnitMap[unitString];
         var system = UnitSystemMap[unit];
 
-        return new NonFractionalParseResult(new LengthValue(system, unit, value), true);
+        return new NonFractionalParseResult(new LengthValue(system, unit, value), true, tokenPair);
     }
 
     private static LengthValue MapFractionalParseResultToLengthValue(FractionalParseResult result)
@@ -143,13 +143,26 @@ public static class LengthParser
             };
         }
 
-        var parsedFractionalTokens = fractionalTokens.Select(ParseFractionalToken);
+        var parsedFractionalTokens = fractionalTokens.Select(ParseFractionalToken).ToList();
 
         var tokenPairs = GenerateTokenPairs(nonFractionalTokens);
-        var parsedNonFractionalTokens = tokenPairs.Select(ParseNonFractionalToken);
+        var parsedNonFractionalTokens = tokenPairs.Select(ParseNonFractionalToken).ToList();
 
         var validFractionalResults = parsedFractionalTokens.Where(result => result.IsValid).ToList();
         var validNonFractionalResults = parsedNonFractionalTokens.Where(result => result.IsValid).ToList();
+        
+        var invalidFractionalResults = parsedFractionalTokens.Where(result => !result.IsValid).ToList();
+        var invalidNonFractionalResults = parsedNonFractionalTokens.Where(result => !result.IsValid).ToList();
+
+        foreach (var invalidFractionalResult in invalidFractionalResults)
+        {
+            errors.Add($"Invalid fractional inch: {invalidFractionalResult.originalToken}");
+        }
+
+        foreach (var invalidNonFractionalResult in invalidNonFractionalResults)
+        {
+            errors.Add($"Invalid input pair: {invalidNonFractionalResult.originalTokenPair.Item1}, {invalidNonFractionalResult.originalTokenPair.Item2}");
+        }
 
         if (!IsAllSameUnitSystem(validNonFractionalResults))
         {
@@ -170,5 +183,5 @@ public static class LengthParser
     }
 }
 
-internal readonly record struct FractionalParseResult(double Numerator, double Denominator, bool IsValid);
-internal readonly record struct NonFractionalParseResult(LengthValue LengthValue, bool IsValid);
+internal readonly record struct FractionalParseResult(double Numerator, double Denominator, bool IsValid, string originalToken);
+internal readonly record struct NonFractionalParseResult(LengthValue LengthValue, bool IsValid, (string, string) originalTokenPair);
