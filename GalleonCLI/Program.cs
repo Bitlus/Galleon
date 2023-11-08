@@ -1,23 +1,26 @@
 ﻿using GalleonLibrary;
 
-var test = "2Feet 4 1/64\"";
-Console.WriteLine("Input: " + test);
+Console.Write("Input: ");
+var input = Console.ReadLine();
+Console.WriteLine(input);
 
-var tokens = LengthTokenizer.Tokenize(test);
+var tokens = LengthTokenizer.Tokenize(input!);
+var parsed = LengthParser.ParseTokens(tokens);
 
-Console.Write("Tokens: ");
-foreach (var token in tokens)
+if (!parsed.IsValid())
 {
-    Console.Write(token + " ");
-}
-Console.WriteLine("\n");
-
-var parsedResult = LengthParser.ParseTokens(tokens);
-
-foreach(var lengthValue in parsedResult.LengthValues)
-{
-    Console.WriteLine(lengthValue.System);
-    Console.WriteLine(lengthValue.Unit);
-    Console.WriteLine(lengthValue.Value);
+    foreach (var error in parsed.Errors)
+    {
+        Console.WriteLine(error);
+    }
     Console.WriteLine();
+    goto endProgram;
 }
+
+Console.WriteLine($"Meters: {LengthDisplay.DisplayMeters(parsed.LengthValues)}");
+Console.WriteLine($"Millimeters: {LengthDisplay.DisplayMillimeters(parsed.LengthValues)}");
+Console.WriteLine($"Imperial: {LengthDisplay.DisplayImperial(parsed.LengthValues)}");
+
+endProgram:
+Console.WriteLine("\nPress any key to exit...");
+Console.ReadKey();
