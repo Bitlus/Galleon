@@ -1,0 +1,31 @@
+﻿@using Microsoft.Fast.Components.FluentUI
+@using GalleonLibrary
+
+@page "/"
+
+<FluentInputLabel>Input: </FluentInputLabel>
+<FluentTextField @onchange="UpdateOutput"></FluentTextField>
+
+@if (_lengthParserResult is not null && _lengthParserResult.IsValid())
+{
+    <br/><br />
+    <FluentLabel>@LengthDisplay.DisplayImperial(_lengthParserResult.LengthValues)</FluentLabel>
+    <FluentLabel>@LengthDisplay.DisplayMeters(_lengthParserResult.LengthValues)</FluentLabel>
+    <FluentLabel>@LengthDisplay.DisplayMillimeters(_lengthParserResult.LengthValues)</FluentLabel>
+}
+
+@code {
+    private LengthParserResult? _lengthParserResult;
+    
+    private void UpdateOutput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+        if (input is not null)
+        {
+            var tokens = LengthTokenizer.Tokenize(input);
+            _lengthParserResult = LengthParser.ParseTokens(tokens);
+            
+        }
+    }
+
+}
