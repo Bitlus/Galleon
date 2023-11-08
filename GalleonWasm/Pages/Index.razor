@@ -3,16 +3,31 @@
 
 @page "/"
 
-<FluentInputLabel>Input: </FluentInputLabel>
-<FluentTextField @onchange="UpdateOutput"></FluentTextField>
+<FluentHeader>Galleon</FluentHeader>
+<FluentCard>
+   <FluentInputLabel>Input Length: </FluentInputLabel>
+    <FluentTextField @onchange="UpdateOutput"></FluentTextField>
+    <br/><br/>
+   <FluentDivider></FluentDivider>
+   @if (_lengthParserResult is not null && _lengthParserResult.IsValid())
+   {
+       <FluentLabel>Imperial: @LengthDisplay.DisplayImperial(_lengthParserResult.LengthValues)</FluentLabel>
+       <FluentLabel>Meters: @LengthDisplay.DisplayMeters(_lengthParserResult.LengthValues)</FluentLabel>
+       <FluentLabel>Millimeters: @LengthDisplay.DisplayMillimeters(_lengthParserResult.LengthValues)</FluentLabel>
+   } 
+    
+    @if (_lengthParserResult is not null && !_lengthParserResult.IsValid())
+    {
+        <FluentLabel>Errors: </FluentLabel>
+        <ul>
+        @foreach (var error in _lengthParserResult.Errors)
+        {
+            <li>@error</li>
+        }
+        </ul>
+    }
+</FluentCard>
 
-@if (_lengthParserResult is not null && _lengthParserResult.IsValid())
-{
-    <br/><br />
-    <FluentLabel>@LengthDisplay.DisplayImperial(_lengthParserResult.LengthValues)</FluentLabel>
-    <FluentLabel>@LengthDisplay.DisplayMeters(_lengthParserResult.LengthValues)</FluentLabel>
-    <FluentLabel>@LengthDisplay.DisplayMillimeters(_lengthParserResult.LengthValues)</FluentLabel>
-}
 
 @code {
     private LengthParserResult? _lengthParserResult;
@@ -27,5 +42,4 @@
             
         }
     }
-
 }
