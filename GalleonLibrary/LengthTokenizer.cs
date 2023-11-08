@@ -3,7 +3,7 @@ public static class LengthTokenizer
 {
     private static bool IsNumberOrSlash(char c)
     {
-        return char.IsDigit(c) || c == '/' || c == '\\';
+        return char.IsDigit(c) || c == '/' || c == '\\' || c == '.';
     }
 
     private static bool IsSameType(char c1, char c2)
@@ -48,7 +48,7 @@ public static class LengthTokenizer
 
 
 
-            if (char.IsDigit(c) || c == '/' || c == '\\' || char.IsLetter(c) || c == '"')
+            if (char.IsDigit(c) || c == '/' || c == '\\' || char.IsLetter(c) || c == '"' || c == '\'' || c == '.') 
             {
                 currentToken += c;
             }
