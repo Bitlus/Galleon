@@ -65,6 +65,10 @@ public static class LengthDisplay
         {
             displayString += "\"";
         }
+        else
+        {
+            displayString = displayString.Trim();
+        }
         
         return displayString.Trim();
     }
